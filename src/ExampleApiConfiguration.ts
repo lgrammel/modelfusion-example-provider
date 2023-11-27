@@ -22,8 +22,8 @@ export class ExampleApiConfiguration extends BaseUrlApiConfiguration {
       headers: {
         Authorization: `Bearer ${loadApiKey({
           apiKey,
-          environmentVariableName: "STABILITY_API_KEY",
-          description: "Stability",
+          environmentVariableName: "EXAMPLE_API_KEY",
+          description: "Example",
         })}`,
       },
       retry,
