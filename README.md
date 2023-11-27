@@ -1,2 +1,3 @@
-# modelfusion-example-provider
-Example provider implementation
+# Example ModelFusion provider implementation
+
+Implements Stability AI as an "example" image provider.

@@ -1,0 +1,61 @@
+{
+  "name": "modelfusion-example-provider",
+  "description": "Example provider implementation.",
+  "version": "0.0.0",
+  "author": "Lars Grammel",
+  "license": "MIT",
+  "keywords": [],
+  "homepage": "https://modelfusion.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lgrammel/modelfusion-example-provider"
+  },
+  "bugs": {
+    "url": "https://github.com/lgrammel/modelfusion-example-provider/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "private": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "./*"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
+    }
+  },
+  "scripts": {
+    "lint": "eslint --ext .ts src",
+    "clean": "rimraf build dist",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc --outDir dist/",
+    "build:cjs": "tsc --outDir build/cjs/ -p tsconfig.cjs.json && node bin/prepare-cjs.js",
+    "test": "vitest run --passWithNoTests src",
+    "test-interactive": "vitest watch",
+    "dist": "npm run clean && npm run lint && npm run test && npm run build && npm run dist:copy-files",
+    "dist:copy-files": "copyfiles package.json README.md LICENSE dist"
+  },
+  "dependencies": {
+    "zod": "3.22.4",
+    "modelfusion": ">= 0.85.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.9",
+    "@types/ws": "^8.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "copyfiles": "2.4.1",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "9.0.0",
+    "fastify": "^4.0.0",
+    "prettier": "3.1.0",
+    "rimraf": "5.0.5",
+    "typescript": "5.2.2",
+    "vitest": "^0.34.5"
+  }
+}
