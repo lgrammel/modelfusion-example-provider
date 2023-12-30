@@ -5,8 +5,8 @@
   "private": true,
   "dependencies": {
     "dotenv": "16.0.3",
-    "modelfusion": "0.87.0",
-    "modelfusion-example-provider": "0.0.2"
+    "modelfusion": "0.110.0",
+    "modelfusion-example-provider": "0.0.3"
   },
   "devDependencies": {
     "@types/node": "20.2.3",

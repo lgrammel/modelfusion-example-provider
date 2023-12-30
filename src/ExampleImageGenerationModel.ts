@@ -3,22 +3,22 @@ import {
   FunctionOptions,
   ImageGenerationModel,
   ImageGenerationModelSettings,
-  PromptFormat,
-  PromptFormatImageGenerationModel,
+  PromptTemplate,
+  PromptTemplateImageGenerationModel,
 } from "modelfusion";
 import {
   AbstractModel,
   callWithRetryAndThrottle,
   createJsonResponseHandler,
   postJsonToApi,
-} from "modelfusion/extension";
+} from "modelfusion/internal";
 import { z } from "zod";
+import { ExampleApiConfiguration } from "./ExampleApiConfiguration.js";
 import { failedExampleCallResponseHandler } from "./ExampleError.js";
 import {
-  ExampleImageGenerationPrompt as ExampleImageGenerationPrompt,
+  ExampleImageGenerationPrompt,
   mapBasicPromptToExampleFormat,
 } from "./ExampleImageGenerationPrompt.js";
-import { ExampleApiConfiguration } from "./ExampleApiConfiguration.js";
 
 /**
  * Create an image generation model that calls the Stability AI image generation API.
@@ -98,7 +98,7 @@ export class ExampleImageGenerationModel
     );
   }
 
-  async doGenerateImage(
+  async doGenerateImages(
     prompt: ExampleImageGenerationPrompt,
     options?: FunctionOptions
   ) {
@@ -106,25 +106,25 @@ export class ExampleImageGenerationModel
 
     return {
       response,
-      base64Image: response.artifacts[0].base64,
+      base64Images: response.artifacts.map((artifact) => artifact.base64),
     };
   }
 
   withTextPrompt() {
-    return this.withPromptFormat(mapBasicPromptToExampleFormat());
+    return this.withPromptTemplate(mapBasicPromptToExampleFormat());
   }
 
-  withPromptFormat<INPUT_PROMPT>(
-    promptFormat: PromptFormat<INPUT_PROMPT, ExampleImageGenerationPrompt>
-  ): PromptFormatImageGenerationModel<
+  withPromptTemplate<INPUT_PROMPT>(
+    promptTemplate: PromptTemplate<INPUT_PROMPT, ExampleImageGenerationPrompt>
+  ): PromptTemplateImageGenerationModel<
     INPUT_PROMPT,
     ExampleImageGenerationPrompt,
     ExampleImageGenerationSettings,
     this
   > {
-    return new PromptFormatImageGenerationModel({
+    return new PromptTemplateImageGenerationModel({
       model: this,
-      promptFormat,
+      promptTemplate,
     });
   }
 

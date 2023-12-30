@@ -1,4 +1,4 @@
-import { PromptFormat } from "modelfusion";
+import { PromptTemplate } from "modelfusion";
 
 export type ExampleImageGenerationPrompt = Array<{
   text: string;
@@ -8,7 +8,7 @@ export type ExampleImageGenerationPrompt = Array<{
 /**
  * Formats a basic text prompt as a Stability prompt.
  */
-export function mapBasicPromptToExampleFormat(): PromptFormat<
+export function mapBasicPromptToExampleFormat(): PromptTemplate<
   string,
   ExampleImageGenerationPrompt
 > {

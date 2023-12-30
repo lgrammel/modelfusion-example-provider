@@ -1,29 +1,32 @@
 import {
-  BaseUrlApiConfiguration,
-  RetryFunction,
-  ThrottleFunction,
+  BaseUrlPartsApiConfiguration,
+  BaseUrlPartsApiConfigurationOptions,
 } from "modelfusion";
-import { loadApiKey } from "modelfusion/extension";
+import { loadApiKey } from "modelfusion/internal";
 
-export class ExampleApiConfiguration extends BaseUrlApiConfiguration {
+export class ExampleApiConfiguration extends BaseUrlPartsApiConfiguration {
   constructor({
-    baseUrl = "https://api.stability.ai/v1",
+    protocol = "https",
+    host = "api.stability.ai",
+    port = "443",
+    path = "/v1",
     apiKey,
+    headers,
     retry,
     throttle,
-  }: {
-    baseUrl?: string;
+  }: Partial<BaseUrlPartsApiConfigurationOptions> & {
     apiKey?: string;
-    retry?: RetryFunction;
-    throttle?: ThrottleFunction;
   } = {}) {
     super({
-      baseUrl,
-      headers: {
+      protocol,
+      host,
+      port,
+      path,
+      headers: headers ?? {
         Authorization: `Bearer ${loadApiKey({
           apiKey,
-          environmentVariableName: "EXAMPLE_API_KEY",
-          description: "Example",
+          environmentVariableName: "STABILITY_API_KEY",
+          description: "Stability",
         })}`,
       },
       retry,
