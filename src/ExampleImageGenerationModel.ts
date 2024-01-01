@@ -5,6 +5,7 @@ import {
   ImageGenerationModelSettings,
   PromptTemplate,
   PromptTemplateImageGenerationModel,
+  zodSchema,
 } from "modelfusion";
 import {
   AbstractModel,
@@ -64,16 +65,37 @@ export class ExampleImageGenerationModel
     input: ExampleImageGenerationPrompt,
     options?: FunctionOptions
   ): Promise<StabilityImageGenerationResponse> {
+    const api = this.settings.api ?? new ExampleApiConfiguration();
+    const abortSignal = options?.run?.abortSignal;
+
     return callWithRetryAndThrottle({
       retry: this.settings.api?.retry,
       throttle: this.settings.api?.throttle,
-      call: async () =>
-        callExampleImageGenerationAPI({
-          ...this.settings,
-          abortSignal: options?.run?.abortSignal,
-          engineId: this.settings.model,
-          textPrompts: input,
-        }),
+      call: async () => {
+        return postJsonToApi({
+          url: api.assembleUrl(
+            `/generation/${this.settings.model}/text-to-image`
+          ),
+          headers: api.headers,
+          body: {
+            height: this.settings.height,
+            width: this.settings.width,
+            text_prompts: input,
+            cfg_scale: this.settings.cfgScale,
+            clip_guidance_preset: this.settings.clipGuidancePreset,
+            sampler: this.settings.sampler,
+            samples: this.settings.numberOfGenerations,
+            seed: this.settings.seed,
+            steps: this.settings.steps,
+            style_preset: this.settings.stylePreset,
+          },
+          failedResponseHandler: failedExampleCallResponseHandler,
+          successfulResponseHandler: createJsonResponseHandler(
+            zodSchema(stabilityImageGenerationResponseSchema)
+          ),
+          abortSignal,
+        });
+      },
     });
   }
 
@@ -210,55 +232,3 @@ export type StabilityImageGenerationSampler =
   | "K_EULER_ANCESTRAL"
   | "K_HEUN"
   | "K_LMS";
-
-async function callExampleImageGenerationAPI({
-  api = new ExampleApiConfiguration(),
-  abortSignal,
-  engineId,
-  height,
-  width,
-  textPrompts,
-  cfgScale,
-  clipGuidancePreset,
-  sampler,
-  samples,
-  seed,
-  steps,
-  stylePreset,
-}: {
-  api?: ApiConfiguration;
-  abortSignal?: AbortSignal;
-  engineId: string;
-  height?: number;
-  width?: number;
-  textPrompts: ExampleImageGenerationPrompt;
-  cfgScale?: number;
-  clipGuidancePreset?: string;
-  sampler?: StabilityImageGenerationSampler;
-  samples?: number;
-  seed?: number;
-  steps?: number;
-  stylePreset?: StabilityImageGenerationStylePreset;
-}): Promise<StabilityImageGenerationResponse> {
-  return postJsonToApi({
-    url: api.assembleUrl(`/generation/${engineId}/text-to-image`),
-    headers: api.headers,
-    body: {
-      height,
-      width,
-      text_prompts: textPrompts,
-      cfg_scale: cfgScale,
-      clip_guidance_preset: clipGuidancePreset,
-      sampler,
-      samples,
-      seed,
-      steps,
-      style_preset: stylePreset,
-    },
-    failedResponseHandler: failedExampleCallResponseHandler,
-    successfulResponseHandler: createJsonResponseHandler(
-      stabilityImageGenerationResponseSchema
-    ),
-    abortSignal,
-  });
-}

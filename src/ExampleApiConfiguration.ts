@@ -1,36 +1,30 @@
 import {
-  BaseUrlPartsApiConfiguration,
-  BaseUrlPartsApiConfigurationOptions,
+  BaseUrlApiConfigurationWithDefaults,
+  PartialBaseUrlPartsApiConfigurationOptions,
 } from "modelfusion";
 import { loadApiKey } from "modelfusion/internal";
 
-export class ExampleApiConfiguration extends BaseUrlPartsApiConfiguration {
-  constructor({
-    protocol = "https",
-    host = "api.stability.ai",
-    port = "443",
-    path = "/v1",
-    apiKey,
-    headers,
-    retry,
-    throttle,
-  }: Partial<BaseUrlPartsApiConfigurationOptions> & {
-    apiKey?: string;
-  } = {}) {
+export class ExampleApiConfiguration extends BaseUrlApiConfigurationWithDefaults {
+  constructor(
+    settings: PartialBaseUrlPartsApiConfigurationOptions & {
+      apiKey?: string;
+    } = {}
+  ) {
     super({
-      protocol,
-      host,
-      port,
-      path,
-      headers: headers ?? {
+      ...settings,
+      headers: settings.headers ?? {
         Authorization: `Bearer ${loadApiKey({
-          apiKey,
+          apiKey: settings.apiKey,
           environmentVariableName: "STABILITY_API_KEY",
           description: "Stability",
         })}`,
       },
-      retry,
-      throttle,
+      baseUrlDefaults: {
+        protocol: "https",
+        host: "api.stability.ai",
+        port: "443",
+        path: "/v1",
+      },
     });
   }
 }
