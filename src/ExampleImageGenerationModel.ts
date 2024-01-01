@@ -49,8 +49,8 @@ export class ExampleImageGenerationModel
     return callWithRetryAndThrottle({
       retry: this.settings.api?.retry,
       throttle: this.settings.api?.throttle,
-      call: async () => {
-        return postJsonToApi({
+      call: async () =>
+        postJsonToApi({
           url: api.assembleUrl(
             `/generation/${this.settings.model}/text-to-image`
           ),
@@ -72,8 +72,7 @@ export class ExampleImageGenerationModel
             zodSchema(stabilityImageGenerationResponseSchema)
           ),
           abortSignal,
-        });
-      },
+        }),
     });
   }
 
